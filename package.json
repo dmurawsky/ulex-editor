@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "draft-js": "^0.10.5",
     "firebase": "^5.4.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
+    "react-markdown": "^3.4.1",
+    "react-mde": "^5.8.0",
     "react-scripts": "1.1.4",
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.82.2"

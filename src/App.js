@@ -5,6 +5,8 @@ import 'firebase/database'
 import 'firebase/auth'
 import githubApi from './githubApi'
 import { ULEX_REPO_NAME } from './constants'
+import ReactMarkdown from 'react-markdown'
+import ReactMde from 'react-mde'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyC4jUofAOrxS-qpNGBopxzkkJsTo66WYTg',
@@ -30,6 +32,8 @@ class App extends Component {
     user: null,
     isUlexForked: false,
     readme: '',
+    editReadme: false,
+    mdeState: null,
   }
 
   _signIn = e => {
@@ -81,8 +85,8 @@ class App extends Component {
   _getReadme = async () => {
     this._setupGithubApi()
     const readmeContents = await this.githubApi.getReadme()
-    this.setState(() => ({ readme: atob(readmeContents.content) }))
-    console.log(readmeContents)
+    const readme = atob(readmeContents.content)
+    this.setState(() => ({ readme, medState: { markdown: readme } }))
   }
 
   _checkUlexForked = async () => {
@@ -108,13 +112,30 @@ class App extends Component {
             <Button onClick={() => firebase.auth().signOut()}>Sign Out</Button>
             <Button onClick={this._checkUlexForked}>Check Fork</Button>
             <Button onClick={this._getReadme}>Get Readme</Button>
+            <Button
+              onClick={() =>
+                this.setState(({ editReadme }) => ({
+                  editReadme: !editReadme,
+                }))
+              }
+            >
+              Toggle Readme Editing
+            </Button>
           </div>
         ) : (
           <Button onClick={this._signIn}>Sign In with GitHub</Button>
         )}
         <div>
-          <p>{this.state.readme}</p>
-          <pre>{JSON.stringify(this.state.user, null, 2)}</pre>
+          {this.state.editReadme ? (
+            <ReactMde
+              className="readme-editor"
+              onChange={medState => this.setState(() => ({ medState }))}
+              editorState={this.state.medState}
+            />
+          ) : (
+            <ReactMarkdown source={this.state.readme} />
+          )}
+          {/* <pre>{JSON.stringify(this.state.user, null, 2)}</pre> */}
         </div>
       </div>
     )
